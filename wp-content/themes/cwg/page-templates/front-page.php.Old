@@ -1,0 +1,201 @@
+<?php
+/**
+ * Template Name: CWG Home Page Template
+ *
+ */
+
+get_header(); ?>
+<?
+	$settings = get_option('cwg_theme_settings');
+	//var_dump($settings);
+?>
+	<div id="primary" class="site-content" style="margin-top:0px;">
+		<div id="homeImageHolder1" class="" style="background-image:url('<? echo $settings['cwg_home_fullwidth_image1'];?>')">
+			<div class="thirteenForty evCenter">
+				<div id="homeImage1-text-holder" class="pull-right">
+					<p><? echo $settings['cwg_home_fullwidth_image_content'];?></p>
+					<a href="<? echo $settings['cwg_home_fullwidth_image_content_link'];?>">
+						<? echo $settings['cwg_home_fullwidth_image_content_link_title'];?>
+					</a>
+				</div>
+			</div>
+		</div>
+		
+		<?
+		//fetch all testimonials
+		wp_reset_postdata();
+		$args = array(
+			'orderby'          => 'post_date',
+			'order'            => 'ASC',
+			'post_type'        => 'testimonials',
+			'post_status'      => 'publish'
+		); 
+		$testimonials = get_posts( $args );
+		?>
+
+		<div class="thirteenForty evCenter" id="testimonials-holder">
+			<span id="left-bracket" class="green bracket">[</span>
+			<ul id="home-testimonial">
+				<? if($testimonials){
+					foreach($testimonials as $testimonial): setup_postdata( $testimonial );
+					$content =  $testimonial->post_content; 
+					$first =substr($content,0, strrpos($content, " ", 0)); 
+					$lastWordLength = strlen($content) -  strrpos($content, " ", 0);
+					$last = substr($content, strrpos($content, " ", 0), $lastWordLength);
+					$last = substr($last, 0, strrpos($last, ".", 0));
+				?>
+				<li><p class="testimonials-items"><? echo $first ; ?><span class="green"><? echo $last; ?></span>.</p></li>
+				<?
+					endforeach;
+					wp_reset_postdata();
+					}
+				?>				
+			</ul>
+			<span id="right-bracket" class="green bracket">]</span>
+		</div>
+		
+		<div id="home-split-container" class="thirteenForty evCenter">
+			<div class="narrower evCenter">
+				<div class="container-fluid">
+					<div class="row-fluid">
+						<div class="col-md-6" style="background-image:url('<? echo $settings['cwg_home_split-section_image1_link'];?>');">
+							<div class="home-split-content">
+								<h3><? echo $settings['cwg_home_split-section-title'];?></h3>
+								<img src="<? echo $settings['cwg_home_split-section_logo'];?>" />
+								<br/>
+								<br/>
+								<p><? echo esc_html( stripslashes( $settings["cwg_home_split-section-content"] ) );?></p>
+							</div>
+						</div>
+						<div class="col-md-6" style="background-image:url('<? echo $settings['cwg_home_split-section_image2_link'];?>');">
+							<div class="home-split-content">
+								<h3><? echo $settings['cwg_home_split-section-title2'];?></h3>
+								<img src="<? echo $settings['cwg_home_split-section_logo2'];?>" />
+								<br/>
+								<br/>
+								<p><? echo esc_html( stripslashes( $settings["cwg_home_split-section-content2"] ) );?></p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+		<div id="content" role="main" style="text-align:center;width:80%;margin:0px auto;" class=" <? if(is_front_page()) echo "thirteenForty evCenter"; ?>">
+
+			<?php while ( have_posts() ) : the_post(); ?>
+				
+				<article id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
+					<div class="entry-content">
+						<?php the_content(); ?>
+					</div><!-- .entry-content -->
+					<footer class="entry-meta">
+						<?php edit_post_link( __( 'Edit', 'twentytwelve' ), '<span class="edit-link">', '</span>' ); ?>
+					</footer><!-- .entry-meta -->
+				</article><!-- #post -->
+				
+			<?php endwhile; // end of the loop. ?>
+
+		</div><!-- #content -->
+		<?
+		//fetch latest 4 featured posts
+		wp_reset_postdata();
+		$args = array(
+			'numberposts'   => 4,
+			'category_name'    => 'featured',
+			'orderby'          => 'post_date',
+			'order'            => 'ASC',
+			'post_type'        => 'post',
+			'post_status'      => 'publish'
+		); 
+		$featuredPosts = get_posts( $args );
+		?>
+		<div id="home-4-featured" class="thirteenForty evCenter">
+			<div class="container-fluid">
+				<div class="row-fluid">
+					<? if($featuredPosts){
+						foreach($featuredPosts as $featured): setup_postdata( $featured );
+						$featuredImg = wp_get_attachment_image_src( get_post_thumbnail_id( $featured->ID ),'full' );
+						$tmpTitle = get_post_meta( $featured->ID,"Display Title");
+					?>
+					<div class="col-sm-6 col-md-3">
+						<div class="featured-top-marker"></div>
+						<h2><? echo $featured->post_title; ?></h2>
+						<img src="<? echo $featuredImg[0]; ?>" />
+						<h4><? echo $tmpTitle[0]; ?></h4>
+						<p><? echo $featured->post_excerpt; ?></p>
+						<a class="ev-learnbtn" href="<? echo get_permalink($featured->ID); ?>"><img style="width:87px;height:32px;" class="pull-right" src="<? echo get_stylesheet_directory_uri(); ?>/resources/images/learnMore-blue.png" /></a>
+						
+					</div>
+					<?
+						endforeach;
+						wp_reset_postdata();
+						}
+					?>
+				</div>
+			</div>
+		</div>
+		<!-- end of home-4-featured -->
+		<div id="homeImageHolder2" class="" style="background-image:url('<? echo $settings['cwg_home_fullwidth_image2'];?>')">
+			<div class="ev-black-overlay">
+				<div class="thirteenForty evCenter">
+					<div id="homeImage2-text-holder" class="text-center">
+						<p><? echo esc_html( stripslashes( $settings["cwg_home_fullwidth_image2_content"] ) );?></p>
+						<a href="<? echo $settings['cwg_home_fullwidth_image2_link'];?>"><img style="width:140px;height:40px;" src="<? echo get_stylesheet_directory_uri(); ?>/resources/images/view-portfolio-btn.png" /></a>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!-- content slider begins -->
+		<?
+		//fetch all posts from category "Home Content Slider"
+		$args = array(
+			'numberposts'   => 4,
+			'category_name'    => 'home-content-slider',
+			'orderby'          => 'post_date',
+			'order'            => 'ASC',
+			'post_type'        => 'post',
+			'post_status'      => 'publish'
+		); 
+		$slides = get_posts( $args );
+		?>
+		<div id="home-bottom-slider-holder" class="thirteenForty evCenter">
+			<div class="container-fluid">
+				<div class="row-fluid" >		
+							
+					<ul id="homepage-bottom-content-slider">
+						<? if($slides){
+							foreach($slides as $slide): setup_postdata( $slide );
+							$featuredImg = wp_get_attachment_image_src( get_post_thumbnail_id( $slide->ID ),'full' );
+							$tmpTitle = get_post_meta( $slide->ID,"Display Title");
+						?>
+							<li>
+								<div class="col-md-3 content-slider-image-holder">
+									<img src="<? echo $featuredImg[0]; ?>" />
+								</div>
+								<div class="col-md-9 content-slider-content-holder">
+									<h1><? echo $slide->post_title; ?></h1>
+									<? echo $slide->post_content; ?>
+								</div>
+							</li>
+						<?
+							endforeach;
+							wp_reset_postdata();
+							}
+						?>
+					</ul>
+					<div id="pager-holder-wrapper" class="col-md-3" style="text-align:center;padding:0px;">
+						<div id="pager-holder">
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		
+	</div><!-- #primary -->
+
+<?php get_sidebar( 'front' ); ?>
+<?php get_footer(); ?>
